@@ -54,7 +54,7 @@
   <header data-template-id="site-header" class="canva-header sticky top-0 z-40 w-full border-b border-slate-200 bg-white/95 backdrop-blur" style="background: rgb(255, 255, 255);">
    <div class="wrap flex min-h-[75px] items-center justify-between gap-4"><a href="#home" class="flex items-center gap-3 font-bold text-[#102b52]" aria-label="Bemcru Learning Center, home"> <img src="logo.jpeg" alt="Bemcru Learning Center logo" class="h-10 w-10 rounded-xl object-contain" width="40" height="40"> <span data-template-id="brand-name" class="canva-text leading-tight" style="color: rgb(16, 43, 82); font-weight: 700; font-style: normal; font-size: 16px;">Bemcru Learning Center</span> </a>
     <nav aria-label="Main navigation" class="hidden lg:flex items-center gap-5 text-sm font-semibold"><a href="#about">About</a><a href="#classes">Classes</a><a href="#fees">Fees</a><a href="#staff">Tutors</a><a href="#activities">Experience</a><a href="#timetable">Timetable</a><a href="#contact">Contact</a><a href="#portal">Portal</a>
-    </nav><a data-template-id="header-register" href="#registration" class="canva-button button button-primary hidden lg:inline-flex" style="background: rgb(21, 87, 165); color: rgb(255, 255, 255); font-weight: 700; font-style: normal; font-size: 16px;">Register Online</a> <button id="menu-toggle" type="button" aria-label="Open navigation menu" aria-controls="mobile-menu" aria-expanded="false" class="lg:hidden rounded-lg border border-slate-300 p-2 text-[#102b52]"><span aria-hidden="true">☰</span></button>
+    </nav><a data-template-id="header-register" href="#registration" class="canva-button button button-primary hidden lg:inline-flex" style="background: rgb(21, 87, 165); color: rgb(255, 255, 255); font-weight: 700; font-style: normal; font-size: 16px;">Register Online</a> <button id="menu-toggle" type="button" aria-label="Open navigation menu" aria-controls="mobile-menu" aria-expanded="false" class="lg:hidden rounded-lg border border-slate-300 p-2 text-[#102b52]"><i data-lucide="menu" aria-hidden="true" class="h-5 w-5"></i></button>
    </div>
    <nav id="mobile-menu" aria-label="Mobile navigation" class="hidden lg:hidden border-t border-slate-200 bg-white px-6 py-4">
     <div class="flex flex-col gap-4 font-semibold"><a href="#about">About</a><a href="#classes">Classes</a><a href="#fees">Fees</a><a href="#staff">Tutors</a><a href="#activities">Experience</a><a href="#timetable">Timetable</a><a href="#contact">Contact</a><a href="#portal">Portal</a><a href="#registration">Register Online</a>
@@ -295,22 +295,22 @@
      <h2 data-template-id="activities-title" class="canva-text mt-2 text-[#102b52]" style="color: rgb(16, 43, 82); font-weight: 700; font-style: normal; font-size: 24px;">Activities &amp; learner experience</h2>
      <div class="mt-7 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
       <div class="card p-5 font-semibold">
-       📖 Revision
+       <i data-lucide="book-open" aria-hidden="true" class="mb-2 h-6 w-6 text-[#1557a5]"></i><br>Revision
       </div>
       <div class="card p-5 font-semibold">
-       ✍️ Tests/exams
+       <i data-lucide="clipboard-check" aria-hidden="true" class="mb-2 h-6 w-6 text-[#1557a5]"></i><br>Tests/exams
       </div>
       <div class="card p-5 font-semibold">
-       💬 Group discussion
+       <i data-lucide="messages-square" aria-hidden="true" class="mb-2 h-6 w-6 text-[#1557a5]"></i><br>Group discussion
       </div>
       <div class="card p-5 font-semibold">
-       🏀 Basketball
+       <i data-lucide="trophy" aria-hidden="true" class="mb-2 h-6 w-6 text-[#1557a5]"></i><br>Basketball
       </div>
       <div class="card p-5 font-semibold">
-       ⚽ Football
+       <i data-lucide="goal" aria-hidden="true" class="mb-2 h-6 w-6 text-[#1557a5]"></i><br>Football
       </div>
       <div class="card p-5 font-semibold">
-       🤝 Guidance and counseling
+       <i data-lucide="handshake" aria-hidden="true" class="mb-2 h-6 w-6 text-[#1557a5]"></i><br>Guidance and counseling
       </div>
      </div>
      <p data-template-id="gallery-note" class="canva-text mt-10 text-sm text-[#52647a]" style="color: rgb(82, 100, 122); font-weight: 400; font-style: normal; font-size: 14px;">Illustrative stock photography; these images do not identify Bemcru learners or staff. Select a photo to enlarge it.</p>
@@ -558,6 +558,9 @@
       status.className='mt-4 font-semibold text-[#1557a5]';
       window.open('https://wa.me/254704514801?text='+encodeURIComponent(message),'_blank','noopener,noreferrer');
     });
+
+  // Replace icon placeholders with accessible Lucide SVG icons.
+  if (window.lucide) window.lucide.createIcons();
 
   // Gentle scroll reveals, with support for reduced-motion preferences.
   (() => {
