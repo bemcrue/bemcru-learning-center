@@ -523,7 +523,7 @@
     const form=document.getElementById('registration-form'),status=document.getElementById('registration-status'),submit=document.getElementById('submit-registration');
     const dobInput=document.getElementById('date_of_birth');
     dobInput.addEventListener('input',()=>{
-      const digits=dobInput.value.replace(/\\D/g,'').slice(0,8);
+      const digits=dobInput.value.replace(/\D/g,'').slice(0,8);
       dobInput.value=digits.length>4?digits.slice(0,2)+'/'+digits.slice(2,4)+'/'+digits.slice(4):digits.length>2?digits.slice(0,2)+'/'+digits.slice(2):digits;
     });
     function markError(id,message){const input=document.getElementById(id),error=document.getElementById(id+'-error');if(error)error.textContent=message;if(input){input.classList.toggle('field-error',!!message);if(message)input.setAttribute('aria-invalid','true');else input.removeAttribute('aria-invalid')}return !!message}
