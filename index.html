@@ -635,33 +635,22 @@
     function formatWhatsAppRegistrationMessage(data){
       const value=(key,fallback='Not provided')=>String(data[key]||'').trim()||fallback;
       const subjects=Array.isArray(data.subjects)&&data.subjects.length?data.subjects.join(', '):'Not provided';
+      const consent=document.getElementById('consent');
       return [
-        '*BEMCRU LEARNING CENTRE*',
-        '📋 *NEW LEARNER REGISTRATION*',
-        '',
-        '👨‍🎓 *LEARNER DETAILS*',
-        '• *Name:* '+value('student_name'),
-        '• *Date of Birth:* '+value('date_of_birth'),
-        '• *School:* '+value('school_name'),
-        '• *Level:* '+value('level'),
-        '• *Pathway:* '+value('pathway','Not applicable'),
-        '• *Grade/Form:* '+value('grade'),
-        '• *Session:* '+value('session'),
-        '• *Subjects:* '+subjects,
-        '• *Preferred Start Date:* '+value('preferred_start_date'),
-        '',
-        '👨‍👩‍👧 *PARENT/GUARDIAN DETAILS*',
-        '• *Name:* '+value('guardian_name'),
-        '• *Phone:* '+value('guardian_phone'),
-        '• *Email:* '+value('guardian_email'),
-        '',
-        '💳 *PAYMENT DETAILS*',
-        '• *Payment Reference:* '+value('payment_reference'),
-        '',
-        '📝 *ADDITIONAL NOTES*',
-        value('notes','None'),
-        '',
-        'Thank you for choosing *Bemcru Learning Centre — Everyone A Learner Everyday.*'
+        'BEMCRU LEARNING CENTER — REGISTRATION ENQUIRY',
+        'Student name: '+value('student_name'),
+        'Date of birth: '+value('date_of_birth'),
+        'Parent/guardian: '+value('guardian_name'),
+        'Guardian phone: '+value('guardian_phone'),
+        'Guardian email: '+value('guardian_email'),
+        'Student level: '+value('level'),
+        'Class/grade: '+value('grade'),
+        'Session: '+value('session'),
+        'Subjects: '+subjects,
+        'Preferred start date: '+value('preferred_start_date'),
+        'Payment reference: '+value('payment_reference'),
+        'Learning needs/notes: '+value('notes','None'),
+        'Consent to be contacted: '+(consent&&consent.checked?'Yes':'No')
       ].join(String.fromCharCode(10));
     }
 
