@@ -591,7 +591,7 @@
     syncPathwayField();
     const subjectOptions=document.getElementById('subject-options');
     const subjectLegend=form.querySelector('legend');
-    const compulsorySeniorSubjects=['English','Mathematics','Kiswahili','Community Service Learning'];
+    const compulsorySeniorSubjects=['English','Mathematics','Kiswahili','Community Service Learning','ICT'];
     const standardSubjects=['Maths','English','Kiswahili','Integrated Science','Pre-technical Studies','Mathematics','Chemistry','Biology','Physics','ICT','Computer Studies'];
     const seniorSubjects={
       'STEM':['Biology','Physics','Chemistry','General Science','Computer Science','Agriculture','Home Science','Aviation Technology','Building and Construction','Electrical Technology','Metal Work','Power Mechanics','Wood Technology','Media Technology','Marine Technology','Technical Studies'],
@@ -630,7 +630,7 @@
         subjectOptions.appendChild(label);
       });
       subjectLegend.textContent=level==='Senior School'
-        ?(pathway?'Subjects in '+pathway+' * (select all that apply)':'Choose a Senior School pathway to see subjects *')
+        ?'Senior School subjects * (compulsory subjects are preselected; choose additional pathway subjects below)'
         :'Subjects of interest * (select all that apply)';
       document.getElementById('subjects-error').textContent='';
     }
