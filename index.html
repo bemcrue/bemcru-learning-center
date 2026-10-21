@@ -605,13 +605,13 @@
       if(level==='Senior School'){
         const compulsoryHeading=document.createElement('p');
         compulsoryHeading.className='w-full font-bold text-[#102b52]';
-        compulsoryHeading.textContent='Compulsory subjects (included for all Senior School learners)';
+        compulsoryHeading.textContent='Core subjects (select the subjects you want)';
         subjectOptions.appendChild(compulsoryHeading);
         compulsorySeniorSubjects.forEach(subject=>{
           const label=document.createElement('label');
           label.className='flex items-center gap-1';
           const checkbox=document.createElement('input');
-          checkbox.type='checkbox';checkbox.name='subjects';checkbox.value=subject;checkbox.checked=true;checkbox.disabled=true;
+          checkbox.type='checkbox';checkbox.name='subjects';checkbox.value=subject;checkbox.checked=false;checkbox.disabled=false;
           checkbox.className='mr-1 accent-[#1557a5]';
           label.append(checkbox,document.createTextNode(' '+subject));
           subjectOptions.appendChild(label);
@@ -630,7 +630,7 @@
         subjectOptions.appendChild(label);
       });
       subjectLegend.textContent=level==='Senior School'
-        ?'Senior School subjects * (compulsory subjects are preselected; choose additional pathway subjects below)'
+        ?'Senior School subjects * (select the core subjects and additional pathway subjects you want)'
         :'Subjects of interest * (select all that apply)';
       document.getElementById('subjects-error').textContent='';
     }
