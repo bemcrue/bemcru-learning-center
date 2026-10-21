@@ -34,6 +34,7 @@
     .field{width:100%;border:1px solid #b8cbdd;border-radius:11px;background:#fff;padding:11px 13px;color:#17324f}
     .field:focus{outline:2px solid #1557a5;outline-offset:1px}
     .field-error{border-color:#ae3434}
+    #pathway-container:not(.hidden){display:block!important}
     .error{color:#a52626;font-size:.83rem;min-height:1.25rem}
     .hero-photo{position:relative;min-height:475px;border-radius:28px;overflow:hidden}
     .hero-photo img{width:100%;height:100%;position:absolute;inset:0;object-fit:cover}
@@ -424,6 +425,23 @@
        <p id="registration-status" role="status" aria-live="polite" class="mt-4 font-semibold"></p>
       </div>
      </form>
+     <script>
+      (function(){
+        const level=document.getElementById('level');
+        const wrap=document.getElementById('pathway-container');
+        const pathway=document.getElementById('pathway');
+        if(!level||!wrap||!pathway)return;
+        function updatePathway(){
+          const show=level.value.trim()==='Senior School';
+          wrap.classList.toggle('hidden',!show);
+          wrap.style.display=show?'block':'none';
+          pathway.required=show;
+          if(!show)pathway.value='';
+        }
+        level.addEventListener('change',updatePathway);
+        updatePathway();
+      })();
+     </script>
     </div>
    </section>
    <section id="contact" data-template-id="contact-section" class="canva-section section bg-[#edf5fc]" style="background: rgb(237, 245, 252);">
