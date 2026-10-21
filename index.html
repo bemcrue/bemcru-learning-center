@@ -39,8 +39,9 @@
     .hero-photo{position:relative;min-height:475px;border-radius:28px;overflow:hidden}
     .hero-photo img{width:100%;height:100%;position:absolute;inset:0;object-fit:cover}
     .hero-photo:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#0925479c,transparent 56%)}
-    .gallery-open{position:fixed!important;z-index:60;inset:50% auto auto 50%;transform:translate(-50%,-50%)!important;width:min(90vw,850px)!important;max-height:85%;background:white;box-shadow:0 25px 80px #0007}
-    .gallery-open img{height:min(65vw,550px);max-height:65vh;object-fit:contain;background:#e9eff5}
+    .gallery-item{cursor:zoom-in;transition:transform .18s ease,box-shadow .18s ease}
+    .gallery-item:hover{box-shadow:0 8px 24px #102b5230}
+    .gallery-open{position:fixed!important;z-index:60;inset:50% auto auto 50%;transform:translate(-50%,-50%)!important;width:auto!important;height:auto!important;max-width:90vw!important;max-height:85vh!important;object-fit:contain!important;border-radius:12px!important;background:#fff;box-shadow:0 25px 80px #0007;cursor:zoom-out!important}
     #lightbox-backdrop:not(.hidden){display:block}
     @media(max-width:767px){.section{padding:52px 0}.hero-photo{min-height:330px}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
@@ -209,13 +210,13 @@
       <label for="staff-search" class="mb-2 block font-semibold">Search by name, subject, or role</label><input id="staff-search" class="field" type="search" placeholder="Search the directory">
      </div>
      <p id="staff-empty" class="mt-5 hidden" role="status">No staff match that search.</p>
-     <div class="mt-7 grid gap-4 sm:grid-cols-3"><img data-template-id="staff-group-photo" loading="lazy" class="canva-image card h-52 w-full object-cover" src="bemcrueteam.jpeg" alt="The Bemcru Learning Center team."><img data-template-id="tutor-male-photo" loading="lazy" class="canva-image card h-52 w-full object-cover" src="director1.jpeg" alt="The director of Bemcru Learning Center."><img data-template-id="tutor-female-photo" loading="lazy" class="canva-image card h-52 w-full object-cover" src="madamprincipalandteam.jpeg" alt="The principal and team at Bemcru Learning Center.">
+     <div class="mt-7 grid gap-4 sm:grid-cols-3"><img data-template-id="staff-group-photo" loading="lazy" class="gallery-item canva-image card h-52 w-full cursor-zoom-in object-cover" src="bemcrueteam.jpeg" alt="The Bemcru Learning Center team."><img data-template-id="tutor-male-photo" loading="lazy" class="gallery-item canva-image card h-52 w-full cursor-zoom-in object-cover" src="director1.jpeg" alt="The director of Bemcru Learning Center."><img data-template-id="tutor-female-photo" loading="lazy" class="gallery-item canva-image card h-52 w-full cursor-zoom-in object-cover" src="madamprincipalandteam.jpeg" alt="The principal and team at Bemcru Learning Center.">
      </div>
      <div id="staff-grid" class="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <article class="staff-card card flex flex-col items-start gap-3 p-5" data-search="dir bensam michura kiswahili history director">
        <span aria-hidden="true" class="rounded-full bg-[#dcecf9] p-3 font-bold">BM</span>
        <div>
-        <h3 class="font-bold">Dir. Bensam Michura</h3><img src="director.jpeg" alt="Director Bensam Michura" loading="lazy" class="mt-3 h-36 w-36 rounded-lg object-cover object-center" width="144" height="144">
+        <h3 class="font-bold">Dir. Bensam Michura</h3><img src="director.jpeg" alt="Director Bensam Michura" loading="lazy" class="gallery-item mt-3 h-36 w-36 cursor-zoom-in rounded-lg object-cover object-center" width="144" height="144">
         <p>Kiswahili/History</p>
         <p class="text-sm text-[#1557a5]">Director</p>
        </div>
@@ -223,7 +224,7 @@
       <article class="staff-card card flex flex-col items-start gap-3 p-5" data-search="md sharon owino mathematics physics principal">
        <span aria-hidden="true" class="rounded-full bg-[#dcecf9] p-3 font-bold">SO</span>
        <div>
-        <h3 class="font-bold">Md. Sharon Owino</h3><img src="sharonowino.jpeg" alt="Sharon Owino" loading="lazy" class="mt-3 h-36 w-36 rounded-lg object-cover object-center" width="144" height="144">
+        <h3 class="font-bold">Md. Sharon Owino</h3><img src="sharonowino.jpeg" alt="Sharon Owino" loading="lazy" class="gallery-item mt-3 h-36 w-36 cursor-zoom-in rounded-lg object-cover object-center" width="144" height="144">
         <p>Mathematics/Physics</p>
         <p class="text-sm text-[#1557a5]">Principal</p>
        </div>
@@ -231,7 +232,7 @@
       <article class="staff-card card flex flex-col items-start gap-3 p-5" data-search="mr geoffrey osiako mathematics physics deputy">
        <span aria-hidden="true" class="rounded-full bg-[#dcecf9] p-3 font-bold">GO</span>
        <div>
-        <h3 class="font-bold">Mr. Geoffrey Osiako</h3><img src="geofrey%20osiako.jpeg" alt="Geoffrey Osiako" loading="lazy" class="mt-3 h-36 w-36 rounded-lg object-cover object-center" width="144" height="144">
+        <h3 class="font-bold">Mr. Geoffrey Osiako</h3><img src="geofrey%20osiako.jpeg" alt="Geoffrey Osiako" loading="lazy" class="gallery-item mt-3 h-36 w-36 cursor-zoom-in rounded-lg object-cover object-center" width="144" height="144">
         <p>Mathematics/Physics</p>
         <p class="text-sm text-[#1557a5]">Deputy</p>
        </div>
@@ -239,7 +240,7 @@
       <article class="staff-card card flex flex-col items-start gap-3 p-5" data-search="md janet owino kiswahili history senior teacher welfare">
        <span aria-hidden="true" class="rounded-full bg-[#dcecf9] p-3 font-bold">JO</span>
        <div>
-        <h3 class="font-bold">Md. Janet Owino</h3><img src="janetowino.jpeg" alt="Janet Owino" loading="lazy" class="mt-3 h-36 w-36 rounded-lg object-cover object-center" width="144" height="144">
+        <h3 class="font-bold">Md. Janet Owino</h3><img src="janetowino.jpeg" alt="Janet Owino" loading="lazy" class="gallery-item mt-3 h-36 w-36 cursor-zoom-in rounded-lg object-cover object-center" width="144" height="144">
         <p>Kiswahili/History</p>
         <p class="text-sm text-[#1557a5]">Senior Teacher/Welfare</p>
        </div>
@@ -247,7 +248,7 @@
       <article class="staff-card card flex flex-col items-start gap-3 p-5" data-search="mr kennedy okello chemistry biology d.o.s">
        <span aria-hidden="true" class="rounded-full bg-[#dcecf9] p-3 font-bold">KO</span>
        <div>
-        <h3 class="font-bold">Mr. Kennedy Okello</h3><img src="kennedyokelo.jpeg" alt="Kennedy Okello" loading="lazy" class="mt-3 h-36 w-36 rounded-lg object-cover object-center" width="144" height="144">
+        <h3 class="font-bold">Mr. Kennedy Okello</h3><img src="kennedyokelo.jpeg" alt="Kennedy Okello" loading="lazy" class="gallery-item mt-3 h-36 w-36 cursor-zoom-in rounded-lg object-cover object-center" width="144" height="144">
         <p>Chemistry/Biology</p>
         <p class="text-sm text-[#1557a5]">D.O.S</p>
        </div>
@@ -255,7 +256,7 @@
       <article class="staff-card card flex flex-col items-start gap-3 p-5" data-search="sr maris onyango mathematics business guidance and counseling">
        <span aria-hidden="true" class="rounded-full bg-[#dcecf9] p-3 font-bold">MO</span>
        <div>
-        <h3 class="font-bold">Sr. Maris Onyango</h3><img src="sr.marisonyango.jpeg" alt="Maris Onyango" loading="lazy" class="mt-3 h-36 w-36 rounded-lg object-cover object-center" width="144" height="144">
+        <h3 class="font-bold">Sr. Maris Onyango</h3><img src="sr.marisonyango.jpeg" alt="Maris Onyango" loading="lazy" class="gallery-item mt-3 h-36 w-36 cursor-zoom-in rounded-lg object-cover object-center" width="144" height="144">
         <p>Mathematics/Business</p>
         <p class="text-sm text-[#1557a5]">Guidance and Counseling</p>
        </div>
@@ -263,35 +264,35 @@
       <article class="staff-card card flex flex-col items-start gap-3 p-5" data-search="mr dancun omollo mathematics business">
        <span aria-hidden="true" class="rounded-full bg-[#dcecf9] p-3 font-bold">DO</span>
        <div>
-        <h3 class="font-bold">Mr. Dancun Omollo</h3><img src="dancunomollo.jpeg" alt="Dancun Omollo" loading="lazy" class="mt-3 h-36 w-36 rounded-lg object-cover object-center" width="144" height="144">
+        <h3 class="font-bold">Mr. Dancun Omollo</h3><img src="dancunomollo.jpeg" alt="Dancun Omollo" loading="lazy" class="gallery-item mt-3 h-36 w-36 cursor-zoom-in rounded-lg object-cover object-center" width="144" height="144">
         <p>Mathematics/Business</p>
        </div>
       </article>
       <article class="staff-card card flex flex-col items-start gap-3 p-5" data-search="mr geoffrey jagongo english literature">
        <span aria-hidden="true" class="rounded-full bg-[#dcecf9] p-3 font-bold">GJ</span>
        <div>
-        <h3 class="font-bold">Mr. Geoffrey Jagongo</h3><img src="geoffreyjagongo.jpeg" alt="Geoffrey Jagongo" loading="lazy" class="mt-3 h-36 w-36 rounded-lg object-cover object-center" width="144" height="144">
+        <h3 class="font-bold">Mr. Geoffrey Jagongo</h3><img src="geoffreyjagongo.jpeg" alt="Geoffrey Jagongo" loading="lazy" class="gallery-item mt-3 h-36 w-36 cursor-zoom-in rounded-lg object-cover object-center" width="144" height="144">
         <p>English Literature</p>
        </div>
       </article>
       <article class="staff-card card flex flex-col items-start gap-3 p-5" data-search="md sharon andanje mathematics chemistry">
        <span aria-hidden="true" class="rounded-full bg-[#dcecf9] p-3 font-bold">SA</span>
        <div>
-        <h3 class="font-bold">Md. Sharon Andanje</h3><img src="sharonandanje.jpeg" alt="Sharon Andanje" loading="lazy" class="mt-3 h-36 w-36 rounded-lg object-cover object-center" width="144" height="144">
+        <h3 class="font-bold">Md. Sharon Andanje</h3><img src="sharonandanje.jpeg" alt="Sharon Andanje" loading="lazy" class="gallery-item mt-3 h-36 w-36 cursor-zoom-in rounded-lg object-cover object-center" width="144" height="144">
         <p>Mathematics/Chemistry</p>
        </div>
       </article>
       <article class="staff-card card flex flex-col items-start gap-3 p-5" data-search="md sabrina ndela computer studies">
        <span aria-hidden="true" class="rounded-full bg-[#dcecf9] p-3 font-bold">SN</span>
        <div>
-        <h3 class="font-bold">Md. Sabrina Ndela</h3><img src="sabrinandela.jpeg" alt="Sabrina Ndela" loading="lazy" class="mt-3 h-36 w-36 rounded-lg object-cover object-center" width="144" height="144">
+        <h3 class="font-bold">Md. Sabrina Ndela</h3><img src="sabrinandela.jpeg" alt="Sabrina Ndela" loading="lazy" class="gallery-item mt-3 h-36 w-36 cursor-zoom-in rounded-lg object-cover object-center" width="144" height="144">
         <p>Computer Studies</p>
        </div>
       </article>
       <article class="staff-card card flex flex-col items-start gap-3 p-5" data-search="md christine musingo english literature">
        <span aria-hidden="true" class="rounded-full bg-[#dcecf9] p-3 font-bold">CM</span>
        <div>
-        <h3 class="font-bold">Md. Christine Musingo</h3><img src="christinemusingo.jpeg" alt="Christine Musingo" loading="lazy" class="mt-3 h-36 w-36 rounded-lg object-cover object-center" width="144" height="144">
+        <h3 class="font-bold">Md. Christine Musingo</h3><img src="christinemusingo.jpeg" alt="Christine Musingo" loading="lazy" class="gallery-item mt-3 h-36 w-36 cursor-zoom-in rounded-lg object-cover object-center" width="144" height="144">
         <p>English Literature</p>
        </div>
       </article>
