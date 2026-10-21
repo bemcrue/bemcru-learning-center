@@ -673,7 +673,7 @@
         'Email: ' + value('guardian_email'),
         'Payment reference: ' + (value('payment_reference') || 'Not provided'),
         'Additional notes: ' + (value('notes') || 'None')
-      ].join('\\n');
+      ].join('\n');
       const whatsappUrl = 'https://wa.me/254704514801?text=' + encodeURIComponent(whatsappMessage);
       const whatsappWindow = window.open(whatsappUrl, '_blank');
       if (!whatsappWindow) {
