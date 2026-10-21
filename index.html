@@ -383,6 +383,14 @@
        <p class="error" id="level-error"></p>
       </div>
       <div>
+       <label for="school_name" class="mb-1 block font-semibold">Current school of study *</label><input id="school_name" name="school_name" class="field" autocomplete="organization" required="" placeholder="Enter the name of the school">
+       <p class="error" id="school_name-error"></p>
+      </div>
+      <div id="pathway-container" class="hidden">
+       <label for="pathway" class="mb-1 block font-semibold">Senior School pathway *</label><select id="pathway" name="pathway" class="field"><option value="">Select pathway</option><option value="STEM">STEM</option><option value="Social Sciences">Social Sciences</option></select>
+       <p class="error" id="pathway-error"></p>
+      </div>
+      <div>
        <label for="grade" class="mb-1 block font-semibold">Class/grade *</label><input id="grade" name="grade" class="field" required="">
        <p class="error" id="grade-error"></p>
       </div>
@@ -527,12 +535,22 @@
       dobInput.value=digits.length>4?digits.slice(0,2)+'/'+digits.slice(2,4)+'/'+digits.slice(4):digits.length>2?digits.slice(0,2)+'/'+digits.slice(2):digits;
     });
     function markError(id,message){const input=document.getElementById(id),error=document.getElementById(id+'-error');if(error)error.textContent=message;if(input){input.classList.toggle('field-error',!!message);if(message)input.setAttribute('aria-invalid','true');else input.removeAttribute('aria-invalid')}return !!message}
+    const levelSelect=document.getElementById('level'),pathwayContainer=document.getElementById('pathway-container'),pathwaySelect=document.getElementById('pathway');
+    function syncPathwayField(){
+      const senior=levelSelect.value==='Senior School';
+      pathwayContainer.classList.toggle('hidden',!senior);
+      pathwaySelect.required=senior;
+      if(!senior){pathwaySelect.value='';markError('pathway','');}
+    }
+    levelSelect.addEventListener('change',syncPathwayField);
+    syncPathwayField();
     form.addEventListener('submit',e=>{
       e.preventDefault();status.textContent='';
-      const required=['student_name','date_of_birth','guardian_name','guardian_phone','guardian_email','level','grade','session','preferred_start_date'];let invalid=false,first=null;
+      const required=['student_name','date_of_birth','guardian_name','guardian_phone','guardian_email','level','school_name','grade','session','preferred_start_date'];let invalid=false,first=null;
       required.forEach(id=>{const el=document.getElementById(id),message=!el.value.trim()?'This field is required.':!el.checkValidity()?'Please enter a valid value.':'';if(markError(id,message)){invalid=true;first??=el}});
       const dob=document.getElementById('date_of_birth');if(dob.value){const parts=dob.value.trim().match(/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/);let parsedDob=null;if(parts){const day=Number(parts[1]),month=Number(parts[2]),year=Number(parts[3]);parsedDob=new Date(year,month-1,day);if(parsedDob.getFullYear()!==year||parsedDob.getMonth()!==month-1||parsedDob.getDate()!==day)parsedDob=null}if(!parsedDob){markError('date_of_birth','Enter a real date in DD/MM/YYYY format, e.g. 29/02/2000.');invalid=true;first??=dob}else if(parsedDob>new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate())){markError('date_of_birth','Date of birth cannot be in the future.');invalid=true;first??=dob}}
       const phone=document.getElementById('guardian_phone');if(phone.value&&!/^[+()\d\s-]{7,20}$/.test(phone.value.trim())){markError('guardian_phone','Enter a valid phone number.');invalid=true;first??=phone}
+      if(levelSelect.value==='Senior School'&&!pathwaySelect.value){markError('pathway','Please select STEM or Social Sciences.');invalid=true;first??=pathwaySelect}else{markError('pathway','')}
       const selected=[...form.querySelectorAll('input[name="subjects"]:checked')].map(el=>el.value);
       document.getElementById('subjects-error').textContent=selected.length?'':'Select at least one subject.';if(!selected.length){invalid=true;first??=form.querySelector('input[name="subjects"]')}
       const consent=document.getElementById('consent');document.getElementById('consent-error').textContent=consent.checked?'':'Consent is required.';if(!consent.checked){invalid=true;first??=consent}
@@ -546,6 +564,8 @@
         'Guardian phone: '+value('guardian_phone'),
         'Guardian email: '+value('guardian_email'),
         'Student level: '+value('level'),
+        'Current school: '+value('school_name'),
+        ...(value('level')==='Senior School'?['Senior School pathway: '+value('pathway')]:[]),
         'Class/grade: '+value('grade'),
         'Session: '+value('session'),
         'Subjects: '+selected.join(', '),
