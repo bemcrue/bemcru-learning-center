@@ -569,8 +569,8 @@
     let generatedTimetables=[];
     function escapeHtml(value){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
     function parseTimetableInputs(){
-      const classes=[...new Set(document.getElementById('timetable-classes').value.split(/\\r?\\n/).map(v=>v.trim()).filter(Boolean))];
-      const lines=document.getElementById('timetable-assignments').value.split(/\\r?\\n/).map(v=>v.trim()).filter(Boolean);
+      const classes=[...new Set(document.getElementById('timetable-classes').value.split(/\r?\n/).map(v=>v.trim()).filter(Boolean))];
+      const lines=document.getElementById('timetable-assignments').value.split(/\r?\n/).map(v=>v.trim()).filter(Boolean);
       const byClass={};
       const errors=[];
       lines.forEach((line,index)=>{
