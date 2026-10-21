@@ -651,36 +651,6 @@
       if(invalid){first.focus();status.textContent='Please correct the highlighted fields.';status.className='mt-4 font-semibold text-red-700';return}
       const value=id=>document.getElementById(id).value.trim();
 
-      // Restore the previous WhatsApp registration message while keeping the current spreadsheet submission.
-      // The message is prepared for the school; the user must press Send in WhatsApp.
-      const whatsappMessage = [
-        '*BEMCRU LEARNING CENTRE — NEW LEARNER REGISTRATION*',
-        '',
-        '*Learner details*',
-        'Name: ' + value('student_name'),
-        'Date of birth: ' + value('date_of_birth'),
-        'School: ' + value('school_name'),
-        'Level: ' + value('level'),
-        'Pathway: ' + (value('pathway') || 'N/A'),
-        'Grade/Form: ' + value('grade'),
-        'Session: ' + value('session'),
-        'Subjects: ' + selected.join(', '),
-        'Preferred start date: ' + value('preferred_start_date'),
-        '',
-        '*Parent/guardian details*',
-        'Name: ' + value('guardian_name'),
-        'Phone: ' + value('guardian_phone'),
-        'Email: ' + value('guardian_email'),
-        'Payment reference: ' + (value('payment_reference') || 'Not provided'),
-        'Additional notes: ' + (value('notes') || 'None')
-      ].join('\n');
-      const whatsappUrl = 'https://wa.me/254704514801?text=' + encodeURIComponent(whatsappMessage);
-      const whatsappWindow = window.open(whatsappUrl, '_blank');
-      if (!whatsappWindow) {
-        status.textContent = 'Your registration is being submitted. If WhatsApp did not open, please allow pop-ups and submit again only after checking with the centre.';
-        status.className = 'mt-4 font-semibold text-[#1557a5]';
-      }
-
       // Send the validated registration to the Bemcru Google Apps Script web app.
       const endpoint='https://script.google.com/macros/s/AKfycbzXsJjM2ciqKuMkjhXYu36mV8oL7JOIOw4OS87UpYenI39lkZKGm_VnXBGrtgJhJf2p/exec';
       const responseFrame=registrationFrame;
