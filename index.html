@@ -591,6 +591,7 @@
     syncPathwayField();
     const subjectOptions=document.getElementById('subject-options');
     const subjectLegend=form.querySelector('legend');
+    const compulsorySeniorSubjects=['English','Mathematics','Kiswahili','Community Service Learning'];
     const standardSubjects=['Maths','English','Kiswahili','Integrated Science','Pre-technical Studies','Mathematics','Chemistry','Biology','Physics','ICT','Computer Studies'];
     const seniorSubjects={
       'STEM':['Biology','Physics','Chemistry','General Science','Computer Science','Agriculture','Home Science','Aviation Technology','Building and Construction','Electrical Technology','Metal Work','Power Mechanics','Wood Technology','Media Technology','Marine Technology','Technical Studies'],
@@ -601,6 +602,25 @@
       const pathway=pathwaySelect.value;
       const options=level==='Senior School'?(seniorSubjects[pathway]||[]):standardSubjects;
       subjectOptions.replaceChildren();
+      if(level==='Senior School'){
+        const compulsoryHeading=document.createElement('p');
+        compulsoryHeading.className='w-full font-bold text-[#102b52]';
+        compulsoryHeading.textContent='Compulsory subjects (included for all Senior School learners)';
+        subjectOptions.appendChild(compulsoryHeading);
+        compulsorySeniorSubjects.forEach(subject=>{
+          const label=document.createElement('label');
+          label.className='flex items-center gap-1';
+          const checkbox=document.createElement('input');
+          checkbox.type='checkbox';checkbox.name='subjects';checkbox.value=subject;checkbox.checked=true;checkbox.disabled=true;
+          checkbox.className='mr-1 accent-[#1557a5]';
+          label.append(checkbox,document.createTextNode(' '+subject));
+          subjectOptions.appendChild(label);
+        });
+        const electiveHeading=document.createElement('p');
+        electiveHeading.className='w-full mt-3 font-bold text-[#102b52]';
+        electiveHeading.textContent=pathway?'Choose subjects in '+pathway+' (select all that apply)':'Select a pathway to see its subjects';
+        subjectOptions.appendChild(electiveHeading);
+      }
       options.forEach(subject=>{
         const label=document.createElement('label');
         const checkbox=document.createElement('input');
