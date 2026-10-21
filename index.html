@@ -568,6 +568,13 @@
     document.getElementById('portal-download').addEventListener('click',downloadTimetable);
 
     const form=document.getElementById('registration-form'),status=document.getElementById('registration-status'),submit=document.getElementById('submit-registration');
+    const registrationFrame=document.createElement('iframe');
+    registrationFrame.id='bemcru-registration-frame';
+    registrationFrame.name='bemcru-registration-frame';
+    registrationFrame.title='Registration submission response';
+    registrationFrame.hidden=true;
+    registrationFrame.src='about:blank';
+    document.body.appendChild(registrationFrame);
     const dobInput=document.getElementById('date_of_birth');
     dobInput.addEventListener('input',()=>{
       const digits=dobInput.value.replace(/\D/g,'').slice(0,8);
@@ -597,16 +604,7 @@
       const value=id=>document.getElementById(id).value.trim();
       // Send the validated registration to the Bemcru Google Apps Script web app.
       const endpoint='https://script.google.com/macros/s/AKfycbzXsJjM2ciqKuMkjhXYu36mV8oL7JOIOw4OS87UpYenI39lkZKGm_VnXBGrtgJhJf2p/exec';
-      let responseFrame=document.getElementById('bemcru-registration-frame');
-      if(!responseFrame){
-        responseFrame=document.createElement('iframe');
-        responseFrame.id='bemcru-registration-frame';
-        responseFrame.name='bemcru-registration-frame';
-        responseFrame.title='Registration submission response';
-        responseFrame.hidden=true;
-        responseFrame.src='about:blank';
-        document.body.appendChild(responseFrame);
-      }
+      const responseFrame=registrationFrame;
       const postForm=document.createElement('form');
       postForm.method='POST';
       postForm.action=endpoint;
