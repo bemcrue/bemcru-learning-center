@@ -333,35 +333,28 @@
      <div class="flex flex-wrap items-end justify-between gap-5">
       <div>
        <p class="eyebrow">Plan your day</p>
-       <h2 class="canva-text mt-2 text-[#102b52]">Timetable generator</h2>
-       <p class="mt-3 text-[#52647a]">Build weekly lesson timetables for different classes. Add each class's subjects and teachers, then generate schedules that try to prevent a teacher being assigned to two classes in the same lesson.</p>
-      </div>
-      <button id="download-timetable" type="button" class="button button-primary">Download timetable</button>
+       <h2 data-template-id="timetable-title" class="canva-text mt-2 text-[#102b52]" style="color: rgb(16, 43, 82); font-weight: 700; font-style: normal; font-size: 24px;">Timetable</h2>
+       <p data-template-id="timetable-note" class="canva-text mt-3 text-[#52647a]" style="color: rgb(82, 100, 122); font-weight: 400; font-style: normal; font-size: 16px;">General daily structure only. Subject allocations and individual lesson times are to be confirmed by the centre.</p>
+      </div><button id="download-timetable" type="button" class="button button-primary">Download timetable</button>
      </div>
-     <div class="card mt-7 p-5 md:p-7">
-      <div class="grid gap-5 md:grid-cols-2">
-       <div>
-        <label for="timetable-classes" class="mb-2 block font-bold text-[#102b52]">Classes / groups</label>
-        <textarea id="timetable-classes" rows="3" class="w-full rounded-xl border border-slate-300 p-3" placeholder="Grade 7&#10;Grade 8&#10;Form 1"></textarea>
-        <p class="mt-1 text-sm text-[#52647a]">Enter one class or group per line.</p>
-       </div>
-       <div>
-        <label for="timetable-assignments" class="mb-2 block font-bold text-[#102b52]">Subjects and teachers</label>
-        <textarea id="timetable-assignments" rows="6" class="w-full rounded-xl border border-slate-300 p-3" placeholder="Grade 7 | Mathematics | Mr Otieno&#10;Grade 7 | English | Ms Achieng&#10;Grade 8 | Mathematics | Mr Otieno&#10;Grade 8 | English | Ms Achieng"></textarea>
-        <p class="mt-1 text-sm text-[#52647a]">One entry per line: <strong>Class | Subject | Teacher</strong>. Teacher is optional; use the exact class name from the left.</p>
-       </div>
-      </div>
-      <div class="mt-5 flex flex-wrap gap-3">
-       <button id="generate-timetable" type="button" class="button button-primary">Generate timetable</button>
-       <button id="clear-timetable" type="button" class="button button-secondary">Clear</button>
-      </div>
-      <p id="timetable-status" class="mt-4 text-sm font-semibold text-[#52647a]" role="status" aria-live="polite">Enter your classes, subjects and teacher names to get started. The generator creates Monday–Friday schedules with six lessons per day.</p>
-      <p class="mt-2 text-sm text-[#52647a]">Important: this is a planning aid. Check the generated timetable before using it, especially where teacher names are missing or a class has too few subject options.</p>
-     </div>
-     <div id="timetable-results" class="mt-7 space-y-7">
-      <div class="card overflow-x-auto p-5">
-       <p class="font-semibold text-[#52647a]">Your generated timetables will appear here.</p>
-      </div>
+     <div class="card mt-7 overflow-x-auto">
+      <table class="w-full min-w-[680px] border-collapse text-left text-sm">
+       <caption class="p-5 text-left font-bold">
+        Monday–Friday · 7:00 a.m.–1:20 p.m. · 6 lessons per day
+       </caption>
+       <thead class="bg-[#edf5fc]">
+        <tr>
+         <th scope="col" class="p-4">Day</th>
+         <th scope="col" class="p-4">Lesson 1</th>
+         <th scope="col" class="p-4">Lesson 2</th>
+         <th scope="col" class="p-4">Lesson 3</th>
+         <th scope="col" class="p-4">Lesson 4</th>
+         <th scope="col" class="p-4">Lesson 5</th>
+         <th scope="col" class="p-4">Lesson 6</th>
+        </tr>
+       </thead>
+       <tbody id="timetable-body"></tbody>
+      </table>
      </div>
     </div>
    </section>
@@ -577,95 +570,18 @@
         const parts=line.split('|').map(v=>v.trim());
         if(parts.length<2||!parts[0]||!parts[1]){errors.push('Line '+(index+1)+' needs at least Class | Subject.');return;}
         const className=parts[0],subject=parts[1],teacher=parts.slice(2).join(' | ');
-        if(!classes.includes(className)){errors.push('Line '+(index+1)+': add "'+className+'" to the Classes / groups box using the same spelling.');return;}
-        (byClass[className]||(byClass[className]=[])).push({subject,teacher});
-      });
-      classes.forEach(name=>{if(!byClass[name]||!byClass[name].length)errors.push('Add at least one subject for '+name+'.');});
-      return {classes,byClass,errors};
-    }
-    function shuffle(items){const a=items.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-    function buildTimetables(classes,byClass){
-      const schedules={};const counts={};const conflicts=[];
-      classes.forEach(name=>{schedules[name]=Array.from({length:5},()=>Array(6).fill(null));counts[name]={};});
-      for(let day=0;day<5;day++){
-        for(let period=0;period<6;period++){
-          const teachersBusy=new Set();
-          const classOrder=shuffle(classes).sort((a,b)=>byClass[a].length-byClass[b].length);
-          classOrder.forEach(className=>{
-            const previous=period>0?schedules[className][day][period-1]:null;
-            const options=shuffle(byClass[className]).sort((a,b)=>(counts[className][a.subject]||0)-(counts[className][b.subject]||0));
-            const available=options.filter(item=>!item.teacher||!teachersBusy.has(item.teacher.toLowerCase()));
-            const chosen=available.find(item=>!previous||item.subject!==previous.subject)||available[0];
-            if(!chosen){schedules[className][day][period]={subject:'Unassigned — check teacher clash',teacher:''};conflicts.push(className+' · '+days[day]+' · '+periods[period]);return;}
-            schedules[className][day][period]=chosen;
-            counts[className][chosen.subject]=(counts[className][chosen.subject]||0)+1;
-            if(chosen.teacher)teachersBusy.add(chosen.teacher.toLowerCase());
-          });
-        }
-      }
-      return {schedules,conflicts};
-    }
-    function renderTimetables(classes,schedules){
-      timetableResults.replaceChildren();
-      classes.forEach(className=>{
-        const card=document.createElement('div');card.className='card overflow-x-auto p-4 md:p-6';
-        const heading=document.createElement('h3');heading.className='mb-4 text-xl font-bold text-[#102b52]';heading.textContent=className;card.appendChild(heading);
-        const table=document.createElement('table');table.className='w-full min-w-[760px] border-collapse text-left text-sm';
-        table.innerHTML='<thead class="bg-[#edf5fc]"><tr><th class="border border-slate-200 p-3">Day</th>'+periods.map(p=>'<th class="border border-slate-200 p-3">'+p+'</th>').join('')+'</tr></thead>';
-        const body=document.createElement('tbody');
-        days.forEach((day,dayIndex)=>{
-          const row=document.createElement('tr');const dayCell=document.createElement('th');dayCell.scope='row';dayCell.className='border border-slate-200 p-3 text-left font-semibold';dayCell.textContent=day;row.appendChild(dayCell);
-          schedules[className][dayIndex].forEach(item=>{const td=document.createElement('td');td.className='border border-slate-200 p-3 align-top';td.innerHTML='<div class="font-semibold text-[#102b52]">'+escapeHtml(item.subject)+'</div>'+(item.teacher?'<div class="mt-1 text-xs text-[#52647a]">'+escapeHtml(item.teacher)+'</div>':'<div class="mt-1 text-xs text-[#52647a]">Teacher not entered</div>');row.appendChild(td);});
-          body.appendChild(row);
-        });
-        table.appendChild(body);card.appendChild(table);timetableResults.appendChild(card);
-      });
-    }
-    document.getElementById('generate-timetable').addEventListener('click',()=>{
-      const parsed=parseTimetableInputs();
-      if(!parsed.classes.length){timetableStatus.textContent='Please enter at least one class or group.';timetableStatus.className='mt-4 text-sm font-semibold text-red-700';return;}
-      if(parsed.errors.length){timetableStatus.textContent=parsed.errors.join(' ');timetableStatus.className='mt-4 text-sm font-semibold text-red-700';return;}
-      const built=buildTimetables(parsed.classes,parsed.byClass);
-      generatedTimetables=parsed.classes.map(name=>({name,days:built.schedules[name]}));
-      renderTimetables(parsed.classes,built.schedules);
-      timetableStatus.textContent='Generated '+parsed.classes.length+' timetable(s) for Monday–Friday, six lessons per day. Teacher names were checked for same-period clashes where provided.'+(built.conflicts.length?' '+built.conflicts.length+' slot(s) could not be assigned because of teacher clashes; review the entries marked Unassigned.':' No same-period teacher clashes were found in the generated assignments.');
-      timetableStatus.className='mt-4 text-sm font-semibold '+(built.conflicts.length?'text-amber-700':'text-green-700');
-    });
-    document.getElementById('clear-timetable').addEventListener('click',()=>{
-      document.getElementById('timetable-classes').value='';
-      document.getElementById('timetable-assignments').value='';
-      generatedTimetables=[];
-      timetableResults.innerHTML='<div class="card overflow-x-auto p-5"><p class="font-semibold text-[#52647a]">Your generated timetables will appear here.</p></div>';
-      timetableStatus.textContent='Cleared. Enter your classes, subjects and teacher names to start again.';
-      timetableStatus.className='mt-4 text-sm font-semibold text-[#52647a]';
-    });
+        if(!classes.    const days=['Monday','Tuesday','Wednesday','Thursday','Friday'];
+    const timetableBody=document.getElementById('timetable-body');
+    days.forEach(day=>{const row=document.createElement('tr');row.className='border-t border-slate-200';const head=document.createElement('th');head.scope='row';head.className='p-4 font-semibold';head.textContent=day;row.append(head);for(let i=0;i<6;i++){const cell=document.createElement('td');cell.className='p-4 text-[#52647a]';cell.textContent='To be confirmed';row.append(cell)}timetableBody.append(row)});
     function downloadTimetable(){
-      if(!generatedTimetables.length){
-        timetableStatus.textContent='Generate a timetable first, then click Download timetable.';
-        timetableStatus.className='mt-4 text-sm font-semibold text-amber-700';
-        return;
-      }
-      const htmlTables=generatedTimetables.map(item=>'<h2>'+escapeHtml(item.name)+'</h2><table><thead><tr><th>Day</th>'+periods.map(p=>'<th>'+p+'</th>').join('')+'</tr></thead><tbody>'+item.days.map((slots,index)=>'<tr><th>'+days[index]+'</th>'+slots.map(slot=>'<td><strong>'+escapeHtml(slot.subject)+'</strong>'+(slot.teacher?'<br>'+escapeHtml(slot.teacher):'')+'</td>').join('')+'</tr>').join('')+'</tbody></table>').join('');
-      const doc='<!DOCTYPE html><html lang="en"><meta charset="utf-8"><title>Bemcru Weekly Timetables</title><style>body{font:14px Arial,sans-serif;color:#102b52;margin:28px}h1{margin-bottom:4px}h2{margin-top:30px}table{border-collapse:collapse;width:100%;margin:12px 0 24px;page-break-inside:avoid}th,td{border:1px solid #9cb6cf;padding:9px;text-align:left;vertical-align:top}th{background:#edf5fc}td{min-width:85px}@media print{body{margin:10mm}h2{page-break-after:avoid}}</style><h1>Bemcru Learning Center</h1><p>Migosi Estate, Kisumu City · Monday–Friday · 7:00 a.m.–1:20 p.m. · Six lessons per day</p>'+htmlTables+'<p>Review teacher availability and lesson assignments before using this timetable.</p></html>';
-      const url=URL.createObjectURL(new Blob([doc],{type:'text/html;charset=utf-8'}));const link=document.createElement('a');link.href=url;link.download='bemcru-weekly-timetables.html';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+      const rows=days.map(day=>'<tr><th>'+day+'</th>'+Array(6).fill('<td>________________</td>').join('')+'</tr>').join('');
+      const doc='<!DOCTYPE html><html lang="en"><meta charset="utf-8"><title>Bemcru General Timetable</title><style>body{font:15px sans-serif;color:#102b52;margin:40px}table{border-collapse:collapse;width:100%;margin-top:25px}th,td{border:1px solid #9cb6cf;padding:14px;text-align:left}th{background:#edf5fc}p{line-height:1.6}</style><h1>Bemcru Learning Center</h1><p>General daily timetable · Migosi Estate, Kisumu City</p><p>Monday–Friday · 7:00 a.m.–1:20 p.m. · 6 lessons per day<br>Holiday sessions: April, August and November/December</p><table><thead><tr><th>Day</th>'+Array.from({length:6},(_,i)=>'<th>Lesson '+(i+1)+'</th>').join('')+'</tr></thead><tbody>'+rows+'</tbody></table><p>Subject allocations and lesson times are to be confirmed by the centre.</p></html>';
+      const url=URL.createObjectURL(new Blob([doc],{type:'text/html;charset=utf-8'}));const link=document.createElement('a');link.href=url;link.download='bemcru-general-timetable.html';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)
     }
     document.getElementById('download-timetable').addEventListener('click',downloadTimetable);
     document.getElementById('portal-download').addEventListener('click',downloadTimetable);
 
-    const form=document.getElementById('registration-form'),status=document.getElementById('registration-status'),submit=document.getElementById('submit-registration');
-    const registrationFrame=document.createElement('iframe');
-    registrationFrame.id='bemcru-registration-frame';
-    registrationFrame.name='bemcru-registration-frame';
-    registrationFrame.title='Registration submission response';
-    registrationFrame.hidden=true;
-    registrationFrame.src='about:blank';
-    document.body.appendChild(registrationFrame);
-    const dobInput=document.getElementById('date_of_birth');
-    dobInput.addEventListener('input',()=>{
-      const digits=dobInput.value.replace(/\D/g,'').slice(0,8);
-      dobInput.value=digits.length>4?digits.slice(0,2)+'/'+digits.slice(2,4)+'/'+digits.slice(4):digits.length>2?digits.slice(0,2)+'/'+digits.slice(2):digits;
-    });
-    function markError(id,message){const input=document.getElementById(id),error=document.getElementById(id+'-error');if(error)error.textContent=message;if(input){input.classList.toggle('field-error',!!message);if(message)input.setAttribute('aria-invalid','true');else input.removeAttribute('aria-invalid')}return !!message}
+nput.removeAttribute('aria-invalid')}return !!message}
     const levelSelect=document.getElementById('level'),pathwayContainer=document.getElementById('pathway-container'),pathwaySelect=document.getElementById('pathway');
     function syncPathwayField(){
       const senior=levelSelect.value==='Senior School';
