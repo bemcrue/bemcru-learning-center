@@ -595,27 +595,72 @@
       const consent=document.getElementById('consent');document.getElementById('consent-error').textContent=consent.checked?'':'Consent is required.';if(!consent.checked){invalid=true;first??=consent}
       if(invalid){first.focus();status.textContent='Please correct the highlighted fields.';status.className='mt-4 font-semibold text-red-700';return}
       const value=id=>document.getElementById(id).value.trim();
-      const message=[
-        'BEMCRU LEARNING CENTER — REGISTRATION ENQUIRY',
-        'Student name: '+value('student_name'),
-        'Date of birth: '+value('date_of_birth'),
-        'Parent/guardian: '+value('guardian_name'),
-        'Guardian phone: '+value('guardian_phone'),
-        'Guardian email: '+value('guardian_email'),
-        'Student level: '+value('level'),
-        'Current school: '+value('school_name'),
-        ...(value('level')==='Senior School'?['Senior School pathway: '+value('pathway')]:[]),
-        'Class/grade: '+value('grade'),
-        'Session: '+value('session'),
-        'Subjects: '+selected.join(', '),
-        'Preferred start date: '+value('preferred_start_date'),
-        'Payment reference: '+(value('payment_reference')||'Not provided'),
-        'Learning needs/notes: '+(value('notes')||'None'),
-        'Consent to be contacted: Yes'
-      ].join('\n');
-      status.textContent='Opening WhatsApp with your registration details. Review the message and press Send in WhatsApp to submit it.';
+      // Send the validated registration to the Bemcru Google Apps Script web app.
+      const endpoint='https://script.google.com/macros/s/AKfycbzXsJjM2ciqKuMkjhXYu36mV8oL7JOIOw4OS87UpYenI39lkZKGm_VnXBGrtgJhJf2p/exec';
+      let responseFrame=document.getElementById('bemcru-registration-frame');
+      if(!responseFrame){
+        responseFrame=document.createElement('iframe');
+        responseFrame.id='bemcru-registration-frame';
+        responseFrame.name='bemcru-registration-frame';
+        responseFrame.title='Registration submission response';
+        responseFrame.hidden=true;
+        responseFrame.src='about:blank';
+        document.body.appendChild(responseFrame);
+      }
+      const postForm=document.createElement('form');
+      postForm.method='POST';
+      postForm.action=endpoint;
+      postForm.target='bemcru-registration-frame';
+      postForm.hidden=true;
+      const fields={
+        student_name:value('student_name'),
+        date_of_birth:value('date_of_birth'),
+        guardian_name:value('guardian_name'),
+        guardian_phone:value('guardian_phone'),
+        guardian_email:value('guardian_email'),
+        level:value('level'),
+        school_name:value('school_name'),
+        pathway:value('pathway'),
+        grade:value('grade'),
+        session:value('session'),
+        subjects:selected.join(', '),
+        preferred_start_date:value('preferred_start_date'),
+        payment_reference:value('payment_reference'),
+        notes:value('notes'),
+        consent:consent.checked?'Yes':'No'
+      };
+      Object.entries(fields).forEach(([name,fieldValue])=>{
+        const hidden=document.createElement('input');
+        hidden.type='hidden';
+        hidden.name=name;
+        hidden.value=fieldValue;
+        postForm.appendChild(hidden);
+      });
+      document.body.appendChild(postForm);
+      submit.disabled=true;
+      status.textContent='Sending your registration to Bemcru Learning Center… Please keep this page open.';
       status.className='mt-4 font-semibold text-[#1557a5]';
-      window.open('https://wa.me/254704514801?text='+encodeURIComponent(message),'_blank','noopener,noreferrer');
+      let completed=false;
+      const finishSubmission=()=>{
+        if(completed)return;
+        completed=true;
+        status.textContent='Your registration has been sent. Bemcru Learning Center will review the details and contact your guardian. If you do not receive confirmation, contact 0704514801 or bemcrue@gmail.com.';
+        status.className='mt-4 font-semibold text-green-700';
+        submit.disabled=false;
+        postForm.remove();
+        form.reset();
+        syncPathwayField();
+      };
+      responseFrame.addEventListener('load',finishSubmission,{once:true});
+      postForm.submit();
+      window.setTimeout(()=>{
+        if(!completed){
+          status.textContent='Your registration is taking longer than expected. Please check with Bemcru Learning Center before submitting again.';
+          status.className='mt-4 font-semibold text-[#1557a5]';
+          submit.disabled=false;
+          postForm.remove();
+        }
+      },12000);
     });
 
   // Replace icon placeholders with accessible Lucide SVG icons.
