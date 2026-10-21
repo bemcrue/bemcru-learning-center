@@ -567,13 +567,6 @@
     document.getElementById('portal-download').addEventListener('click',downloadTimetable);
 
     const form=document.getElementById('registration-form'),status=document.getElementById('registration-status'),submit=document.getElementById('submit-registration');
-    const registrationFrame=document.createElement('iframe');
-    registrationFrame.id='bemcru-registration-frame';
-    registrationFrame.name='bemcru-registration-frame';
-    registrationFrame.title='Registration submission response';
-    registrationFrame.hidden=true;
-    registrationFrame.src='about:blank';
-    document.body.appendChild(registrationFrame);
     const dobInput=document.getElementById('date_of_birth');
     dobInput.addEventListener('input',()=>{
       const digits=dobInput.value.replace(/\D/g,'').slice(0,8);
@@ -639,75 +632,9 @@
     renderSubjectOptions();
 
     form.addEventListener('submit',e=>{
-      e.preventDefault();status.textContent='';
-      const required=['student_name','date_of_birth','guardian_name','guardian_phone','guardian_email','level','school_name','grade','session','preferred_start_date'];let invalid=false,first=null;
-      required.forEach(id=>{const el=document.getElementById(id),message=!el.value.trim()?'This field is required.':!el.checkValidity()?'Please enter a valid value.':'';if(markError(id,message)){invalid=true;first??=el}});
-      const dob=document.getElementById('date_of_birth');if(dob.value){const parts=dob.value.trim().match(/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/);let parsedDob=null;if(parts){const day=Number(parts[1]),month=Number(parts[2]),year=Number(parts[3]);parsedDob=new Date(year,month-1,day);if(parsedDob.getFullYear()!==year||parsedDob.getMonth()!==month-1||parsedDob.getDate()!==day)parsedDob=null}if(!parsedDob){markError('date_of_birth','Enter a real date in DD/MM/YYYY format, e.g. 29/02/2000.');invalid=true;first??=dob}else if(parsedDob>new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate())){markError('date_of_birth','Date of birth cannot be in the future.');invalid=true;first??=dob}}
-      const phone=document.getElementById('guardian_phone');if(phone.value&&!/^[+()\d\s-]{7,20}$/.test(phone.value.trim())){markError('guardian_phone','Enter a valid phone number.');invalid=true;first??=phone}
-      if(levelSelect.value==='Senior School'&&!pathwaySelect.value){markError('pathway','Please select STEM or Social Sciences.');invalid=true;first??=pathwaySelect}else{markError('pathway','')}
-      const selected=[...form.querySelectorAll('input[name="subjects"]:checked')].map(el=>el.value);
-      document.getElementById('subjects-error').textContent=selected.length?'':'Select at least one subject.';if(!selected.length){invalid=true;first??=form.querySelector('input[name="subjects"]')}
-      const consent=document.getElementById('consent');document.getElementById('consent-error').textContent=consent.checked?'':'Consent is required.';if(!consent.checked){invalid=true;first??=consent}
-      if(invalid){first.focus();status.textContent='Please correct the highlighted fields.';status.className='mt-4 font-semibold text-red-700';return}
-      const value=id=>document.getElementById(id).value.trim();
-
-      // Send the validated registration to the Bemcru Google Apps Script web app.
-      const endpoint='https://script.google.com/macros/s/AKfycbzXsJjM2ciqKuMkjhXYu36mV8oL7JOIOw4OS87UpYenI39lkZKGm_VnXBGrtgJhJf2p/exec';
-      const responseFrame=registrationFrame;
-      const postForm=document.createElement('form');
-      postForm.method='POST';
-      postForm.action=endpoint;
-      postForm.target='bemcru-registration-frame';
-      postForm.hidden=true;
-      const fields={
-        student_name:value('student_name'),
-        date_of_birth:value('date_of_birth'),
-        guardian_name:value('guardian_name'),
-        guardian_phone:value('guardian_phone'),
-        guardian_email:value('guardian_email'),
-        level:value('level'),
-        school_name:value('school_name'),
-        pathway:value('pathway'),
-        grade:value('grade'),
-        session:value('session'),
-        subjects:selected.join(', '),
-        preferred_start_date:value('preferred_start_date'),
-        payment_reference:value('payment_reference'),
-        notes:value('notes'),
-        consent:consent.checked?'Yes':'No'
-      };
-      Object.entries(fields).forEach(([name,fieldValue])=>{
-        const hidden=document.createElement('input');
-        hidden.type='hidden';
-        hidden.name=name;
-        hidden.value=fieldValue;
-        postForm.appendChild(hidden);
-      });
-      document.body.appendChild(postForm);
-      submit.disabled=true;
-      status.textContent='Sending your registration to Bemcru Learning Center… Please keep this page open.';
+      e.preventDefault();
+      status.textContent='Online registration is temporarily unavailable while automatic WhatsApp notifications are being configured. Please contact Bemcru Learning Centre on 0704514801 or bemcrue@gmail.com to register.';
       status.className='mt-4 font-semibold text-[#1557a5]';
-      let completed=false;
-      const finishSubmission=()=>{
-        if(completed)return;
-        completed=true;
-        status.textContent='Your registration has been sent. Bemcru Learning Center will review the details and contact your guardian. If you do not receive confirmation, contact 0704514801 or bemcrue@gmail.com.';
-        status.className='mt-4 font-semibold text-green-700';
-        submit.disabled=false;
-        postForm.remove();
-        form.reset();
-        syncPathwayField();
-      };
-      responseFrame.addEventListener('load',finishSubmission,{once:true});
-      postForm.submit();
-      window.setTimeout(()=>{
-        if(!completed){
-          status.textContent='Your registration is taking longer than expected. Please check with Bemcru Learning Center before submitting again.';
-          status.className='mt-4 font-semibold text-[#1557a5]';
-          submit.disabled=false;
-          postForm.remove();
-        }
-      },12000);
     });
 
   // Replace icon placeholders with accessible Lucide SVG icons.
