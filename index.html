@@ -631,8 +631,7 @@
     levelSelect.addEventListener('change',renderSubjectOptions);
     renderSubjectOptions();
 
-    // Creates the clean, multi-line WhatsApp notification text for the backend to send.
-    // Real line breaks are produced by \n; WhatsApp displays *asterisk-wrapped text* in bold.
+    // Build a readable WhatsApp message from the registration form.
     function formatWhatsAppRegistrationMessage(data){
       const value=(key,fallback='Not provided')=>String(data[key]||'').trim()||fallback;
       const subjects=Array.isArray(data.subjects)&&data.subjects.length?data.subjects.join(', '):'Not provided';
@@ -668,11 +667,79 @@
 
     form.addEventListener('submit',e=>{
       e.preventDefault();
-      // Keep this formatter ready for the WhatsApp Cloud API/backend integration.
-      // No message is sent until a secure backend sender is configured.
-      status.textContent='Online registration is temporarily unavailable while automatic WhatsApp notifications are being configured. Please contact Bemcru Learning Centre on 0704514801 or bemcrue@gmail.com to register.';
+      status.textContent='';
+      const fields=[
+        ['learner_name','learner_name'],['date_of_birth','date_of_birth'],['school','school'],
+        ['level','level'],['pathway','pathway'],['grade','grade'],['session','session'],
+        ['preferred_start_date','preferred_start_date'],['parent_name','parent_name'],
+        ['parent_phone','parent_phone'],['parent_email','parent_email'],
+        ['payment_reference','payment_reference'],['notes','notes']
+      ];
+      let valid=true;
+      fields.forEach(([id,name])=>{
+        const input=document.getElementById(id);
+        if(!input)return;
+        if(name==='pathway'&&levelSelect.value!=='Senior School'){markError(id,'');return;}
+        if(input.required&&!input.checkValidity()){
+          markError(id,input.validationMessage||'Please complete this field.');
+          valid=false;
+        }else markError(id,'');
+      });
+      const selectedSubjects=Array.from(form.querySelectorAll('input[name="subjects"]:checked')).map(input=>input.value);
+      if(!selectedSubjects.length){
+        document.getElementById('subjects-error').textContent='Please select at least one subject.';
+        valid=false;
+      }else document.getElementById('subjects-error').textContent='';
+      const consent=document.getElementById('consent');
+      if(!consent.checked){
+        markError('consent','Please confirm your consent before continuing.');
+        valid=false;
+      }else markError('consent','');
+      if(!valid){
+        status.textContent='Please check the highlighted fields and try again.';
+        status.className='mt-4 font-semibold text-[#a52626]';
+        const firstInvalid=form.querySelector('[aria-invalid="true"]');
+        if(firstInvalid)firstInvalid.focus();
+        return;
+      }
+      const data={
+        learner_name:valueFrom('learner_name'),
+        date_of_birth:valueFrom('date_of_birth'),
+        school:valueFrom('school'),
+        level:valueFrom('level'),
+        pathway:levelSelect.value==='Senior School'?valueFrom('pathway'):'',
+        grade:valueFrom('grade'),
+        session:valueFrom('session'),
+        subjects:selectedSubjects,
+        preferred_start_date:valueFrom('preferred_start_date'),
+        parent_name:valueFrom('parent_name'),
+        parent_phone:valueFrom('parent_phone'),
+        parent_email:valueFrom('parent_email'),
+        payment_reference:valueFrom('payment_reference'),
+        notes:valueFrom('notes')
+      };
+      const message=formatWhatsAppRegistrationMessage(data);
+      const whatsappUrl='https://wa.me/254704514801?text='+encodeURIComponent(message);
+      status.textContent='Your registration details are ready. WhatsApp will open with your message; please press Send in WhatsApp to submit it to Bemcru Learning Centre.';
       status.className='mt-4 font-semibold text-[#1557a5]';
+      const link=document.createElement('a');
+      link.href=whatsappUrl;
+      link.target='_blank';
+      link.rel='noopener noreferrer';
+      link.className='button button-primary mt-3';
+      link.textContent='Open WhatsApp and Send Registration';
+      link.setAttribute('aria-label','Open WhatsApp with your registration details prefilled');
+      const existing=form.querySelector('[data-whatsapp-submit-link]');
+      if(existing)existing.remove();
+      link.dataset.whatsappSubmitLink='true';
+      status.insertAdjacentElement('afterend',link);
+      window.open(whatsappUrl,'_blank','noopener,noreferrer');
     });
+
+    function valueFrom(id){
+      const input=document.getElementById(id);
+      return input?input.value.trim():'';
+    }
 
   // Replace icon placeholders with accessible Lucide SVG icons.
   if (window.lucide) window.lucide.createIcons();
