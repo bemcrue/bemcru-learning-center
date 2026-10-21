@@ -41,7 +41,7 @@
     .hero-photo:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#0925479c,transparent 56%)}
     .gallery-item{cursor:zoom-in;transition:box-shadow .18s ease}
     .gallery-item:hover{box-shadow:0 8px 24px #102b5230}
-    #lightbox-backdrop:not(.hidden){display:flex;align-items:center;justify-content:center;padding:5vh 5vw;box-sizing:border-box}
+    #lightbox-backdrop{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;filter:none!important}#lightbox-backdrop:not(.hidden){display:flex;align-items:center;justify-content:center;padding:5vh 5vw;box-sizing:border-box;background:rgba(6,26,49,.88)}
     #lightbox-backdrop .lightbox-photo{display:block;max-width:90vw;max-height:85vh;width:auto;height:auto;object-fit:contain;border-radius:12px;background:#fff;box-shadow:0 25px 80px #0007;cursor:default}
     @media(max-width:767px){.section{padding:52px 0}.hero-photo{min-height:330px}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
