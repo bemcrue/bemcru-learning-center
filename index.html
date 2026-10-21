@@ -631,8 +631,45 @@
     levelSelect.addEventListener('change',renderSubjectOptions);
     renderSubjectOptions();
 
+    // Creates the clean, multi-line WhatsApp notification text for the backend to send.
+    // Real line breaks are produced by \n; WhatsApp displays *asterisk-wrapped text* in bold.
+    function formatWhatsAppRegistrationMessage(data){
+      const value=(key,fallback='Not provided')=>String(data[key]||'').trim()||fallback;
+      const subjects=Array.isArray(data.subjects)&&data.subjects.length?data.subjects.join(', '):'Not provided';
+      return [
+        '*BEMCRU LEARNING CENTRE*',
+        '📋 *NEW LEARNER REGISTRATION*',
+        '',
+        '👨‍🎓 *LEARNER DETAILS*',
+        '• *Name:* '+value('learner_name'),
+        '• *Date of Birth:* '+value('date_of_birth'),
+        '• *School:* '+value('school'),
+        '• *Level:* '+value('level'),
+        '• *Pathway:* '+value('pathway','Not applicable'),
+        '• *Grade/Form:* '+value('grade'),
+        '• *Session:* '+value('session'),
+        '• *Subjects:* '+subjects,
+        '• *Preferred Start Date:* '+value('preferred_start_date'),
+        '',
+        '👨‍👩‍👧 *PARENT/GUARDIAN DETAILS*',
+        '• *Name:* '+value('parent_name'),
+        '• *Phone:* '+value('parent_phone'),
+        '• *Email:* '+value('parent_email'),
+        '',
+        '💳 *PAYMENT DETAILS*',
+        '• *Payment Reference:* '+value('payment_reference'),
+        '',
+        '📝 *ADDITIONAL NOTES*',
+        value('notes','None'),
+        '',
+        'Thank you for choosing *Bemcru Learning Centre — Everyone A Learner Everyday.*'
+      ].join('\\n');
+    }
+
     form.addEventListener('submit',e=>{
       e.preventDefault();
+      // Keep this formatter ready for the WhatsApp Cloud API/backend integration.
+      // No message is sent until a secure backend sender is configured.
       status.textContent='Online registration is temporarily unavailable while automatic WhatsApp notifications are being configured. Please contact Bemcru Learning Centre on 0704514801 or bemcrue@gmail.com to register.';
       status.className='mt-4 font-semibold text-[#1557a5]';
     });
