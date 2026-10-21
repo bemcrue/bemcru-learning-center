@@ -640,9 +640,9 @@
         '📋 *NEW LEARNER REGISTRATION*',
         '',
         '👨‍🎓 *LEARNER DETAILS*',
-        '• *Name:* '+value('learner_name'),
+        '• *Name:* '+value('student_name'),
         '• *Date of Birth:* '+value('date_of_birth'),
-        '• *School:* '+value('school'),
+        '• *School:* '+value('school_name'),
         '• *Level:* '+value('level'),
         '• *Pathway:* '+value('pathway','Not applicable'),
         '• *Grade/Form:* '+value('grade'),
@@ -651,9 +651,9 @@
         '• *Preferred Start Date:* '+value('preferred_start_date'),
         '',
         '👨‍👩‍👧 *PARENT/GUARDIAN DETAILS*',
-        '• *Name:* '+value('parent_name'),
-        '• *Phone:* '+value('parent_phone'),
-        '• *Email:* '+value('parent_email'),
+        '• *Name:* '+value('guardian_name'),
+        '• *Phone:* '+value('guardian_phone'),
+        '• *Email:* '+value('guardian_email'),
         '',
         '💳 *PAYMENT DETAILS*',
         '• *Payment Reference:* '+value('payment_reference'),
@@ -665,26 +665,27 @@
       ].join('\\n');
     }
 
+    function valueFrom(id){
+      const input=document.getElementById(id);
+      return input?input.value.trim():'';
+    }
+
     form.addEventListener('submit',e=>{
       e.preventDefault();
       status.textContent='';
-      const fields=[
-        ['learner_name','learner_name'],['date_of_birth','date_of_birth'],['school','school'],
-        ['level','level'],['pathway','pathway'],['grade','grade'],['session','session'],
-        ['preferred_start_date','preferred_start_date'],['parent_name','parent_name'],
-        ['parent_phone','parent_phone'],['parent_email','parent_email'],
-        ['payment_reference','payment_reference'],['notes','notes']
-      ];
+      const requiredIds=['student_name','date_of_birth','guardian_name','guardian_phone','guardian_email','level','school_name','grade','session','preferred_start_date'];
       let valid=true;
-      fields.forEach(([id,name])=>{
+      requiredIds.forEach(id=>{
         const input=document.getElementById(id);
         if(!input)return;
-        if(name==='pathway'&&levelSelect.value!=='Senior School'){markError(id,'');return;}
-        if(input.required&&!input.checkValidity()){
-          markError(id,input.validationMessage||'Please complete this field.');
-          valid=false;
-        }else markError(id,'');
+        const message=input.checkValidity()?'':(input.validationMessage||'Please complete this field.');
+        if(markError(id,message))valid=false;
       });
+      const senior=levelSelect.value==='Senior School';
+      if(senior){
+        const message=pathwaySelect.value?'':'Please select a Senior School pathway.';
+        if(markError('pathway',message))valid=false;
+      }else markError('pathway','');
       const selectedSubjects=Array.from(form.querySelectorAll('input[name="subjects"]:checked')).map(input=>input.value);
       if(!selectedSubjects.length){
         document.getElementById('subjects-error').textContent='Please select at least one subject.';
@@ -692,36 +693,38 @@
       }else document.getElementById('subjects-error').textContent='';
       const consent=document.getElementById('consent');
       if(!consent.checked){
-        markError('consent','Please confirm your consent before continuing.');
+        document.getElementById('consent-error').textContent='Please confirm your consent before continuing.';
         valid=false;
-      }else markError('consent','');
+      }else document.getElementById('consent-error').textContent='';
       if(!valid){
         status.textContent='Please check the highlighted fields and try again.';
         status.className='mt-4 font-semibold text-[#a52626]';
-        const firstInvalid=form.querySelector('[aria-invalid="true"]');
-        if(firstInvalid)firstInvalid.focus();
+        const firstInvalid=form.querySelector('[aria-invalid="true"]')||consent;
+        firstInvalid.focus();
         return;
       }
       const data={
-        learner_name:valueFrom('learner_name'),
+        student_name:valueFrom('student_name'),
         date_of_birth:valueFrom('date_of_birth'),
-        school:valueFrom('school'),
+        school_name:valueFrom('school_name'),
         level:valueFrom('level'),
-        pathway:levelSelect.value==='Senior School'?valueFrom('pathway'):'',
+        pathway:senior?valueFrom('pathway'):'',
         grade:valueFrom('grade'),
         session:valueFrom('session'),
         subjects:selectedSubjects,
         preferred_start_date:valueFrom('preferred_start_date'),
-        parent_name:valueFrom('parent_name'),
-        parent_phone:valueFrom('parent_phone'),
-        parent_email:valueFrom('parent_email'),
+        guardian_name:valueFrom('guardian_name'),
+        guardian_phone:valueFrom('guardian_phone'),
+        guardian_email:valueFrom('guardian_email'),
         payment_reference:valueFrom('payment_reference'),
         notes:valueFrom('notes')
       };
       const message=formatWhatsAppRegistrationMessage(data);
       const whatsappUrl='https://wa.me/254704514801?text='+encodeURIComponent(message);
-      status.textContent='Your registration details are ready. WhatsApp will open with your message; please press Send in WhatsApp to submit it to Bemcru Learning Centre.';
+      status.textContent='WhatsApp is ready with your registration details. Review the message and press Send in WhatsApp to submit your registration.';
       status.className='mt-4 font-semibold text-[#1557a5]';
+      const existing=form.querySelector('[data-whatsapp-submit-link]');
+      if(existing)existing.remove();
       const link=document.createElement('a');
       link.href=whatsappUrl;
       link.target='_blank';
@@ -729,17 +732,10 @@
       link.className='button button-primary mt-3';
       link.textContent='Open WhatsApp and Send Registration';
       link.setAttribute('aria-label','Open WhatsApp with your registration details prefilled');
-      const existing=form.querySelector('[data-whatsapp-submit-link]');
-      if(existing)existing.remove();
       link.dataset.whatsappSubmitLink='true';
       status.insertAdjacentElement('afterend',link);
       window.open(whatsappUrl,'_blank','noopener,noreferrer');
     });
-
-    function valueFrom(id){
-      const input=document.getElementById(id);
-      return input?input.value.trim():'';
-    }
 
   // Replace icon placeholders with accessible Lucide SVG icons.
   if (window.lucide) window.lucide.createIcons();
