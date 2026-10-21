@@ -556,32 +556,30 @@
     backdrop.addEventListener('click',e=>{if(e.target===backdrop)closeGallery()});closeGalleryButton.addEventListener('click',closeGallery);
     document.addEventListener('keydown',e=>{if(e.key==='Escape')closeGallery();if(e.key==='Tab'&&openGallery){e.preventDefault();closeGalleryButton.focus()}});
     const days=['Monday','Tuesday','Wednesday','Thursday','Friday'];
-    const periods=['Lesson 1','Lesson 2','Lesson 3','Lesson 4','Lesson 5','Lesson 6'];
-    const timetableResults=document.getElementById('timetable-results');
-    const timetableStatus=document.getElementById('timetable-status');
-    let generatedTimetables=[];
-    function escapeHtml(value){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
-    function parseTimetableInputs(){
-      const classes=[...new Set(document.getElementById('timetable-classes').value.split(/\r?\n/).map(v=>v.trim()).filter(Boolean))];
-      const lines=document.getElementById('timetable-assignments').value.split(/\r?\n/).map(v=>v.trim()).filter(Boolean);
-      const byClass={};
-      const errors=[];
-      lines.forEach((line,index)=>{
-        const parts=line.split('|').map(v=>v.trim());
-        if(parts.length<2||!parts[0]||!parts[1]){errors.push('Line '+(index+1)+' needs at least Class | Subject.');return;}
-        const className=parts[0],subject=parts[1],teacher=parts.slice(2).join(' | ');
-        if(!classes.    const days=['Monday','Tuesday','Wednesday','Thursday','Friday'];
     const timetableBody=document.getElementById('timetable-body');
     days.forEach(day=>{const row=document.createElement('tr');row.className='border-t border-slate-200';const head=document.createElement('th');head.scope='row';head.className='p-4 font-semibold';head.textContent=day;row.append(head);for(let i=0;i<6;i++){const cell=document.createElement('td');cell.className='p-4 text-[#52647a]';cell.textContent='To be confirmed';row.append(cell)}timetableBody.append(row)});
     function downloadTimetable(){
       const rows=days.map(day=>'<tr><th>'+day+'</th>'+Array(6).fill('<td>________________</td>').join('')+'</tr>').join('');
-      const doc='<!DOCTYPE html><html lang="en"><meta charset="utf-8"><title>Bemcru General Timetable</title><style>body{font:15px sans-serif;color:#102b52;margin:40px}table{border-collapse:collapse;width:100%;margin-top:25px}th,td{border:1px solid #9cb6cf;padding:14px;text-align:left}th{background:#edf5fc}p{line-height:1.6}</style><h1>Bemcru Learning Center</h1><p>General daily timetable · Migosi Estate, Kisumu City</p><p>Monday–Friday · 7:00 a.m.–1:20 p.m. · 6 lessons per day<br>Holiday sessions: April, August and November/December</p><table><thead><tr><th>Day</th>'+Array.from({length:6},(_,i)=>'<th>Lesson '+(i+1)+'</th>').join('')+'</tr></thead><tbody>'+rows+'</tbody></table><p>Subject allocations and lesson times are to be confirmed by the centre.</p></html>';
+      const doc='<!DOCTYPE html><html lang="en"><meta charset="utf-8"><title>Bemcru General Timetable</title><style>body{font:15px sans-serif;color:#102b52;margin:40px}table{border-collapse:collapse;width:100%;margin-top:25px}th,td{border:1px solid #9cb6cf;padding:14px;text-align:left}th{background:#edf5fc}p{line-height:1.6}</style><h1>Bemcru Learning Center</h1><p>General daily timetable · Migosi Estate, Kisumu City</p><p>Monday–Friday · 7:00 a.m.–1:20 p.m. · 6 lessons per day<br>Holiday sessions: April, August and November/December · 7 weeks<br>Listed session: 2 November–18 December</p><p>Blank subject slots for the centre to complete. Individual lesson times and subjects are not yet specified.</p><table><thead><tr><th>Day</th>'+Array.from({length:6},(_,i)=>'<th>Lesson '+(i+1)+'</th>').join('')+'</tr></thead><tbody>'+rows+'</tbody></table></html>';
       const url=URL.createObjectURL(new Blob([doc],{type:'text/html;charset=utf-8'}));const link=document.createElement('a');link.href=url;link.download='bemcru-general-timetable.html';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)
     }
     document.getElementById('download-timetable').addEventListener('click',downloadTimetable);
     document.getElementById('portal-download').addEventListener('click',downloadTimetable);
 
-nput.removeAttribute('aria-invalid')}return !!message}
+    const form=document.getElementById('registration-form'),status=document.getElementById('registration-status'),submit=document.getElementById('submit-registration');
+    const registrationFrame=document.createElement('iframe');
+    registrationFrame.id='bemcru-registration-frame';
+    registrationFrame.name='bemcru-registration-frame';
+    registrationFrame.title='Registration submission response';
+    registrationFrame.hidden=true;
+    registrationFrame.src='about:blank';
+    document.body.appendChild(registrationFrame);
+    const dobInput=document.getElementById('date_of_birth');
+    dobInput.addEventListener('input',()=>{
+      const digits=dobInput.value.replace(/\D/g,'').slice(0,8);
+      dobInput.value=digits.length>4?digits.slice(0,2)+'/'+digits.slice(2,4)+'/'+digits.slice(4):digits.length>2?digits.slice(0,2)+'/'+digits.slice(2):digits;
+    });
+    function markError(id,message){const input=document.getElementById(id),error=document.getElementById(id+'-error');if(error)error.textContent=message;if(input){input.classList.toggle('field-error',!!message);if(message)input.setAttribute('aria-invalid','true');else input.removeAttribute('aria-invalid')}return !!message}
     const levelSelect=document.getElementById('level'),pathwayContainer=document.getElementById('pathway-container'),pathwaySelect=document.getElementById('pathway');
     function syncPathwayField(){
       const senior=levelSelect.value==='Senior School';
@@ -607,7 +605,7 @@ nput.removeAttribute('aria-invalid')}return !!message}
       if(level==='Senior School'){
         const compulsoryHeading=document.createElement('p');
         compulsoryHeading.className='w-full font-bold text-[#102b52]';
-        compulsoryHeading.textContent='Compulsory subjects (select only the subjects you want to register and pay for)';
+        compulsoryHeading.textContent='Core subjects (select the subjects you want)';
         subjectOptions.appendChild(compulsoryHeading);
         compulsorySeniorSubjects.forEach(subject=>{
           const label=document.createElement('label');
